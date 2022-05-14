@@ -18,12 +18,13 @@ def main(params):
     db = params.db
     table_name = params.table_name
     url = params.url
+    parquet_name = 'output.parquet'
     csv_name = 'output.csv'
 
-    os.system(f"wget {url} -O {csv_name}")
+    os.system(f"wget {url} -O {parquet_name}")
 
-    engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db}')
-
+    df = pd.read_parquet(parquet_name)
+    df.to_csv(csv_name, index=False)
     df_iter = pd.read_csv(csv_name, iterator=True, chunksize=100000)
 
     df = next(df_iter)
@@ -31,10 +32,11 @@ def main(params):
     df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
     df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
 
+    engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db}')
+
     df.head(n=0).to_sql(name=table_name, con=engine, if_exists='replace')
 
     df.to_sql(name=table_name, con=engine, if_exists='append')
-
 
     while True: 
 
