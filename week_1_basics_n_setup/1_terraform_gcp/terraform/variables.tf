@@ -1,9 +1,10 @@
 locals {
-  data_lake_bucket = "dtc_data_lake"
+  data_lake_bucket = "de_camp_data_lake"
 }
 
 variable "project" {
   description = "Your GCP Project ID"
+  default = "de-zoomcamp-350218"
 }
 
 variable "region" {
